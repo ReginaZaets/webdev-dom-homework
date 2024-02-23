@@ -65,12 +65,52 @@
 <script>
   "use strict";
 
+  fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
+    method: "GET"
+  }).then((response) => {
+    response.json().then((responseData) => {
+      newComments = responseData.comments.map((comment) => {
+        return {
+          name: comment.author.name,
+          date: new Date(comment.date).toLocaleTimeString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }),
+          text: comment.text,
+          likes: comment.likes,
+          isLiked: false,
+        };
+      });
+      renderComments();
+    });
+  });
+
   const buttonElement = document.getElementById("add-button");
   const listElement = document.getElementById("list");
   const nameInputElement = document.getElementById("name-input");
   const commentInputElement = document.getElementById("comment-input");
   const likesElements = document.querySelectorAll('.likes');
   const likeButtonElements = document.querySelectorAll('.like-button');
+
+
+  // function fetchPromise() {
+  //   return fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
+  //     method: 'GET'
+  //   }).then((res) => res.json())
+  //     .then((responseData) => {
+  //       newComments = responseData.comments.map(comment => {
+  //         return {
+  //           name: comment.author.name,
+  //           date: new Date(comment.date),
+  //           text: comment.text,
+  //           likes: comment.likes,
+  //           isLiked: false,
+  //         };
+
+  //       });
+  //       return newComments;
+  //       renderComments();
+
+  //     });
+  // };
+
 
 
   const getDate = () => {
@@ -95,31 +135,6 @@
     return date + '.' + month + '.' + year + ' ' + hours + ':' + minute;
   };
 
-
-  let newComments = [];
-  initEventListerner();
-
-  const ferchPromise = fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
-    method: "GET",
-  }).then((response) => {
-
-    const jsonPromise = response.json();
-
-    jsonPromise.then((responseData) => {
-      const appComments = responseData.newComments.map((comment) => {
-        return {
-          name: comment.author.name,
-          time: new Date(comment.time),
-          comments: comment.comments,
-          likes: comment.likes,
-          isLiked: false,
-        }
-      });
-      newComments = appComments;
-      renderComments();
-    });
-  });
-
   buttonElement.addEventListener('click', () => {
     nameInputElement.classList.remove("error");
     commentInputElement.classList.remove("error");
@@ -131,25 +146,92 @@
       commentInputElement.classList.add("error");
       return;
     }
-
-    const ferchPromise = fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
+    fetch('https://wedev-api.sky.pro/api/v1/regina-zaets/comments', {
       method: "POST",
       body: JSON.stringify({
-        text: nameInputElement.value.replaceAll("<", "&lt").replaceAll(">", "&gt").replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll(" ", "&nbsp;"),
-        name: commentInputElement.value.replaceAll("<", "&lt").replaceAll(">", "&gt").replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll(" ", "&nbsp;"),
-      }),
+        text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
+        name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
+      })
     }).then((response) => {
       response.json().then((responseData) => {
-        newComments = responseData.newComments;
-        nameInputElement.value || commentInputElement.value === "";
-        renderComments();
-
+        fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
+          method: "GET"
+        }).then((response) => {
+          response.json().then((responseData) => {
+            newComments = responseData.comments.map((comment) => {
+              return {
+                name: comment.author.name,
+                date: new Date(comment.date).toLocaleTimeString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }),
+                text: comment.text,
+                likes: comment.likes,
+                isLiked: false,
+             };
+           });
+           renderComments();
+          });
+         });
       });
     });
+    nameInputElement.value = "";
+    commentInputElement.value = "";
+    nameInputElement.value.trim() === "" || commentInputElement.value.trim() === "";
+    renderComments();
+
+    
+    // newComments.push({
+    //   name: nameInputElement.value
+    //     .replaceAll("&", "&amp;")
+    //     .replaceAll("<", "&lt;")
+    //     .replaceAll(">", "&gt;")
+    //     .replaceAll('"', "&quot;"),
+    //   time: getDate(),
+    //   comments: commentInputElement.value
+    //     .replaceAll("&", "&amp;")
+    //     .replaceAll("<", "&lt;")
+    //     .replaceAll(">", "&gt;")
+    //     .replaceAll('"', "&quot;"),
+    //   likes: 0,
+    //   isLiked: false,
+    // });
+    // nameInputElement.value || commentInputElement.value === "";
+    // renderComments();
+
+    //   fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
+    //     method: 'POST',
+    //     body: JSON.stringify({
+    //       text: commentInputElement.value,
+    //       name: nameInputElement.value,
+    //     }),
+    //   }).then((res) => res.json())
+    //     .then((responseData) => {
+    //     fetchPromise();
+    //   })
+    // });
+
+    // fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
+    //   method: 'GET'
+    // }).then(res => res.json().then((response) => {
+    //   newComments = response.comments.map(comment => {
+    //   return {
+    //     name: comment.author.name,
+    //     date: new Date(comment.date),
+    //     text: comment.text,
+    //     likes: comment.likes,
+    //     isLiked: false,
+    //   };
+    //   renderComments();
+    // })}));
+
+
+    // fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
+    //   method: 'GET'
+    // }).then(res => res.json().then((response) => {
+    //   newComments = response.comments;
+    //   renderComments();
+    // }));
   });
 
-
-  const initEventListerner = () => {
+  function initEventListerner() {
     const likeButtonElements = document.querySelectorAll('.like-button');
     for (const likeButtonElement of likeButtonElements) {
       likeButtonElement.addEventListener('click', event => {
@@ -167,22 +249,35 @@
     };
   };
 
+  initEventListerner();
 
-  const jsonObj = JSON.stringify(newComments);
-  console.log(jsonObj);
-
-  const objFromJson = JSON.parse(jsonObj);
+  let newComments = [
+    // {
+    //       name: "Глеб Фокин",
+    //       time: "12.02.22 12:18",
+    //       comments: "Это будет первый комментарий на этой странице",
+    //       likes: 3,
+    //       isLiked: false,
+    //     },
+    //     {
+    //       name: "Варвара Н.",
+    //       time: "13.02.22 19:22",
+    //       comments: "Мне нравится как оформлена эта страница! ❤",
+    //       likes: 75,
+    //       isLiked: false,
+    //     },
+  ];
 
   const renderComments = () => {
     const commentHtml = newComments.map((comment, index) => {
       return `<li class="comment">
           <div class="comment-header">
             <div>${comment.name} </div>
-            <div>${comment.time}</div>
+            <div>${comment.date}</div>
           </div>
           <div class="comment-body">
             <div class="comment-text">
-              ${comment.comments}
+              ${comment.text}
             </div>
           </div>
           <div class="comment-footer">
@@ -200,7 +295,6 @@
   renderComments();
 
 
-
   function answerComment() {
     const commentsAnswer = document.querySelectorAll('.comment');
     const formText = document.querySelector('.add-form-text');
@@ -210,7 +304,6 @@
       })
     })
   }
-
 
 
 </script>
