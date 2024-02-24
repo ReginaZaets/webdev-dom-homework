@@ -9,6 +9,9 @@
 
 <body>
   <div class="container">
+    <div>
+      <p style="display: block; color: rgb(255, 255, 255)" class="text-loading">Комментарии добавляются</p>
+    </div>
     <ul id="list" class="comments">
       <li class="comment">
         <div class="comment-header">
@@ -63,53 +66,59 @@
 </style>
 
 <script>
-  "use strict";
-
-  fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
-    method: "GET"
-  }).then((response) => {
-    response.json().then((responseData) => {
-      newComments = responseData.comments.map((comment) => {
-        return {
-          name: comment.author.name,
-          date: new Date(comment.date).toLocaleTimeString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }),
-          text: comment.text,
-          likes: comment.likes,
-          isLiked: false,
-        };
-      });
-      renderComments();
-    });
-  });
-
+  
   const buttonElement = document.getElementById("add-button");
   const listElement = document.getElementById("list");
   const nameInputElement = document.getElementById("name-input");
   const commentInputElement = document.getElementById("comment-input");
   const likesElements = document.querySelectorAll('.likes');
   const likeButtonElements = document.querySelectorAll('.like-button');
+  const textElementLoading = document.querySelector('.text-loading');
+ 
+  const fetchAndRenderComments = () => {
+    return fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
+      method: "GET"
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((response) => {
+        return response
+      })
+      .then((responseData) => {
+        newComments = responseData.comments.map((comment) => {
+          return {
+            name: comment.author.name,
+            date: new Date(comment.date).toLocaleTimeString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }),
+            text: comment.text,
+            likes: comment.likes,
+            isLiked: false,
+          };
+        });
+        let hideTextLoading = textElementLoading.style.display = "none";
+        renderComments();
+      });
+  };
 
 
-  // function fetchPromise() {
-  //   return fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
-  //     method: 'GET'
-  //   }).then((res) => res.json())
-  //     .then((responseData) => {
-  //       newComments = responseData.comments.map(comment => {
-  //         return {
-  //           name: comment.author.name,
-  //           date: new Date(comment.date),
-  //           text: comment.text,
-  //           likes: comment.likes,
-  //           isLiked: false,
-  //         };
-
-  //       });
-  //       return newComments;
-  //       renderComments();
-
+  // fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
+  //   method: "GET"
+  // }).then((response) => {
+  //   response.json().then((responseData) => {
+  //     newComments = responseData.comments.map((comment) => {
+  //       return {
+  //         name: comment.author.name,
+  //         date: new Date(comment.date).toLocaleTimeString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }),
+  //         text: comment.text,
+  //         likes: comment.likes,
+  //         isLiked: false,
+  //       };
   //     });
-  // };
+  //     renderComments();
+  //   });
+  // });
+
+  
 
 
 
@@ -146,90 +155,77 @@
       commentInputElement.classList.add("error");
       return;
     }
+
+    buttonElement.disabled = true;
+    buttonElement.textContent = "Комментарий добавляется...";
+
     fetch('https://wedev-api.sky.pro/api/v1/regina-zaets/comments', {
       method: "POST",
       body: JSON.stringify({
         text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
         name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
       })
-    }).then((response) => {
-      response.json().then((responseData) => {
-        fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
-          method: "GET"
-        }).then((response) => {
-          response.json().then((responseData) => {
-            newComments = responseData.comments.map((comment) => {
-              return {
-                name: comment.author.name,
-                date: new Date(comment.date).toLocaleTimeString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }),
-                text: comment.text,
-                likes: comment.likes,
-                isLiked: false,
-             };
-           });
-           renderComments();
-          });
-         });
-      });
-    });
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then(() => {
+        return fetchAndRenderComments();
+      })
+      // .then((responseData) => {
+      //   return fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
+      //     method: "GET"
+      //   });
+      // })
+      // .then((response) => {
+      //   return response.json();
+      // })
+      // .then((responseData) => {
+      //   newComments = responseData.comments.map((comment) => {
+      //     return {
+      //       name: comment.author.name,
+      //       date: new Date(comment.date).toLocaleTimeString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }),
+      //       text: comment.text,
+      //       likes: comment.likes,
+      //       isLiked: false,
+      //     };
+      //   });
+      //   renderComments();
+      // })
+      .then(() => {
+        textElementLoading.disabled = false;
+        buttonElement.disabled = false;
+        buttonElement.textContent = "Написать";
+      })
+    // response.json().then((responseData) => {
+    //   fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
+    //     method: "GET"
+    //   }).then((response) => {
+    //     response.json().then((responseData) => {
+    //       newComments = responseData.comments.map((comment) => {
+    //         return {
+    //           name: comment.author.name,
+    //           date: new Date(comment.date).toLocaleTimeString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }),
+    //           text: comment.text,
+    //           likes: comment.likes,
+    //           isLiked: false,
+    //        };
+    //      });
+    //      renderComments();
+    //     });
+    //    });
+    // });
     nameInputElement.value = "";
     commentInputElement.value = "";
     nameInputElement.value.trim() === "" || commentInputElement.value.trim() === "";
     renderComments();
-
-    
-    // newComments.push({
-    //   name: nameInputElement.value
-    //     .replaceAll("&", "&amp;")
-    //     .replaceAll("<", "&lt;")
-    //     .replaceAll(">", "&gt;")
-    //     .replaceAll('"', "&quot;"),
-    //   time: getDate(),
-    //   comments: commentInputElement.value
-    //     .replaceAll("&", "&amp;")
-    //     .replaceAll("<", "&lt;")
-    //     .replaceAll(">", "&gt;")
-    //     .replaceAll('"', "&quot;"),
-    //   likes: 0,
-    //   isLiked: false,
-    // });
-    // nameInputElement.value || commentInputElement.value === "";
-    // renderComments();
-
-    //   fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
-    //     method: 'POST',
-    //     body: JSON.stringify({
-    //       text: commentInputElement.value,
-    //       name: nameInputElement.value,
-    //     }),
-    //   }).then((res) => res.json())
-    //     .then((responseData) => {
-    //     fetchPromise();
-    //   })
-    // });
-
-    // fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
-    //   method: 'GET'
-    // }).then(res => res.json().then((response) => {
-    //   newComments = response.comments.map(comment => {
-    //   return {
-    //     name: comment.author.name,
-    //     date: new Date(comment.date),
-    //     text: comment.text,
-    //     likes: comment.likes,
-    //     isLiked: false,
-    //   };
-    //   renderComments();
-    // })}));
-
-
-    // fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
-    //   method: 'GET'
-    // }).then(res => res.json().then((response) => {
-    //   newComments = response.comments;
-    //   renderComments();
-    // }));
   });
+  // nameInputElement.value = "";
+  // commentInputElement.value = "";
+  // nameInputElement.value.trim() === "" || commentInputElement.value.trim() === "";
+  // renderComments();
+
+
 
   function initEventListerner() {
     const likeButtonElements = document.querySelectorAll('.like-button');
@@ -292,6 +288,7 @@
     answerComment();
   };
 
+  fetchAndRenderComments();
   renderComments();
 
 
