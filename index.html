@@ -66,7 +66,7 @@
 </style>
 
 <script>
-  
+
   const buttonElement = document.getElementById("add-button");
   const listElement = document.getElementById("list");
   const nameInputElement = document.getElementById("name-input");
@@ -74,7 +74,7 @@
   const likesElements = document.querySelectorAll('.likes');
   const likeButtonElements = document.querySelectorAll('.like-button');
   const textElementLoading = document.querySelector('.text-loading');
- 
+
   const fetchAndRenderComments = () => {
     return fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
       method: "GET"
@@ -99,28 +99,6 @@
         renderComments();
       });
   };
-
-
-  // fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
-  //   method: "GET"
-  // }).then((response) => {
-  //   response.json().then((responseData) => {
-  //     newComments = responseData.comments.map((comment) => {
-  //       return {
-  //         name: comment.author.name,
-  //         date: new Date(comment.date).toLocaleTimeString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }),
-  //         text: comment.text,
-  //         likes: comment.likes,
-  //         isLiked: false,
-  //       };
-  //     });
-  //     renderComments();
-  //   });
-  // });
-
-  
-
-
 
   const getDate = () => {
     let currentDate = new Date();
@@ -164,68 +142,49 @@
       body: JSON.stringify({
         text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
         name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
+        // forceError: true,
       })
     })
       .then((response) => {
-        return response.json();
+        if (response.status === 400) {
+          throw new Error("Имя и комментарий должны быть больше 3х символов");
+        } else if (response.status === 500) {
+          throw new Error("Серввер упал");
+        } else {
+          return response.json();
+        }
+        // if (response.status === 201) {
+        //   return response.json();
+        // } else {
+        //   throw new Error("Серввер упал");
+        // }
       })
       .then(() => {
         return fetchAndRenderComments();
       })
-      // .then((responseData) => {
-      //   return fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
-      //     method: "GET"
-      //   });
-      // })
-      // .then((response) => {
-      //   return response.json();
-      // })
-      // .then((responseData) => {
-      //   newComments = responseData.comments.map((comment) => {
-      //     return {
-      //       name: comment.author.name,
-      //       date: new Date(comment.date).toLocaleTimeString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }),
-      //       text: comment.text,
-      //       likes: comment.likes,
-      //       isLiked: false,
-      //     };
-      //   });
-      //   renderComments();
-      // })
       .then(() => {
         textElementLoading.disabled = false;
         buttonElement.disabled = false;
         buttonElement.textContent = "Написать";
+        nameInputElement.value = "";
+        commentInputElement.value = "";
+        nameInputElement.value.trim() === "" || commentInputElement.value.trim() === "";
       })
-    // response.json().then((responseData) => {
-    //   fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
-    //     method: "GET"
-    //   }).then((response) => {
-    //     response.json().then((responseData) => {
-    //       newComments = responseData.comments.map((comment) => {
-    //         return {
-    //           name: comment.author.name,
-    //           date: new Date(comment.date).toLocaleTimeString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }),
-    //           text: comment.text,
-    //           likes: comment.likes,
-    //           isLiked: false,
-    //        };
-    //      });
-    //      renderComments();
-    //     });
-    //    });
-    // });
-    nameInputElement.value = "";
-    commentInputElement.value = "";
-    nameInputElement.value.trim() === "" || commentInputElement.value.trim() === "";
+      .catch((error) => {
+        buttonElement.disabled = false;
+        buttonElement.textContent = "Написать";
+        if (error.message === "Имя и комментарий должны быть больше 3х символов") {
+          alert("Имя и комментарий должны быть больше 3х символов");
+        }
+        if (error.message === "Серввер упал") {
+          alert("Серввер упал, попробуйте позже");
+        }
+        // alert("Кажется, что-то пошло не так, попробуй позже");
+        // console.warn(error);
+      })
+
     renderComments();
   });
-  // nameInputElement.value = "";
-  // commentInputElement.value = "";
-  // nameInputElement.value.trim() === "" || commentInputElement.value.trim() === "";
-  // renderComments();
-
-
 
   function initEventListerner() {
     const likeButtonElements = document.querySelectorAll('.like-button');
