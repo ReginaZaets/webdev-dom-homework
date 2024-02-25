@@ -142,7 +142,7 @@
       body: JSON.stringify({
         text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
         name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
-        // forceError: true,
+        forceError: true,
       })
     })
       .then((response) => {
@@ -150,6 +150,8 @@
           throw new Error("Имя и комментарий должны быть больше 3х символов");
         } else if (response.status === 500) {
           throw new Error("Серввер упал");
+        // } else if (response.status === '') {
+        //   throw new Error('Failed to fetch');
         } else {
           return response.json();
         }
@@ -178,6 +180,11 @@
         }
         if (error.message === "Серввер упал") {
           alert("Серввер упал, попробуйте позже");
+        }
+        if (window.navigator.onLine === false ) {
+          alert('Проблемы с интернетом, проверьте подключение')
+        // if (error.message === 'Failed to fetch') {
+        //   alert("Отсутствует интернет");
         }
         // alert("Кажется, что-то пошло не так, попробуй позже");
         // console.warn(error);
