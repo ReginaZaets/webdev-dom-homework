@@ -1,3 +1,5 @@
+import { getTodos, postTodos } from "./api.js";
+import { renderComments } from "./render.js";
 
 const buttonElement = document.getElementById("add-button");
 const listElement = document.getElementById("list");
@@ -8,13 +10,7 @@ const likeButtonElements = document.querySelectorAll('.like-button');
 const textElementLoading = document.querySelector('.text-loading');
 
 const fetchAndRenderComments = () => {
-  return fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
-    method: "GET"
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((response) => {
+  getTodos().then((response) => {
       return response
     })
     .then((responseData) => {
@@ -28,7 +24,7 @@ const fetchAndRenderComments = () => {
         };
       });
       let hideTextLoading = textElementLoading.style.display = "none";
-      renderComments();
+      renderComments({newComments});
     });
 };
 
@@ -69,33 +65,12 @@ buttonElement.addEventListener('click', () => {
   buttonElement.disabled = true;
   buttonElement.textContent = "Комментарий добавляется...";
 
-  fetch('https://wedev-api.sky.pro/api/v1/regina-zaets/comments', {
-    method: "POST",
-    body: JSON.stringify({
-      text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
-      name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
-      // forceError: true,
-    })
+  postTodos({
+    text: commentInputElement.value,
+    name: nameInputElement.value,
+  }).then(() => {
+    return fetchAndRenderComments();
   })
-    .then((response) => {
-      if (response.status === 400) {
-        throw new Error("Имя и комментарий должны быть больше 3х символов");
-      } else if (response.status === 500) {
-        throw new Error("Серввер упал");
-      // } else if (response.status === '') {
-      //   throw new Error('Failed to fetch');
-      } else {
-        return response.json();
-      }
-      // if (response.status === 201) {
-      //   return response.json();
-      // } else {
-      //   throw new Error("Серввер упал");
-      // }
-    })
-    .then(() => {
-      return fetchAndRenderComments();
-    })
     .then(() => {
       textElementLoading.disabled = false;
       buttonElement.disabled = false;
@@ -113,19 +88,19 @@ buttonElement.addEventListener('click', () => {
       if (error.message === "Серввер упал") {
         alert("Серввер упал, попробуйте позже");
       }
-      if (window.navigator.onLine === false ) {
+      if (window.navigator.onLine === false) {
         alert('Проблемы с интернетом, проверьте подключение')
-      // if (error.message === 'Failed to fetch') {
-      //   alert("Отсутствует интернет");
+        // if (error.message === 'Failed to fetch') {
+        //   alert("Отсутствует интернет");
       }
       // alert("Кажется, что-то пошло не так, попробуй позже");
       // console.warn(error);
     })
 
-  renderComments();
+  renderComments({newComments});
 });
 
-function initEventListerner() {
+export function initEventListerner() {
   const likeButtonElements = document.querySelectorAll('.like-button');
   for (const likeButtonElement of likeButtonElements) {
     likeButtonElement.addEventListener('click', event => {
@@ -138,7 +113,7 @@ function initEventListerner() {
         newComments[index].likes--;
         newComments[index].isLiked = false;
       };
-      renderComments();
+      renderComments({newComments});
     });
   };
 };
@@ -162,35 +137,11 @@ let newComments = [
   //     },
 ];
 
-const renderComments = () => {
-  const commentHtml = newComments.map((comment, index) => {
-    return `<li class="comment">
-        <div class="comment-header">
-          <div>${comment.name} </div>
-          <div>${comment.date}</div>
-        </div>
-        <div class="comment-body">
-          <div class="comment-text">
-            ${comment.text}
-          </div>
-        </div>
-        <div class="comment-footer">
-          <div class="likes">
-            <span class="likes-counter">${comment.likes}</span>
-            <button data-index="${index}" class="${comment.isLiked ? 'like-button -active-like' : 'like-button'}"></button>
-          </div>
-        </div>`
-  }).join('');
-  listElement.innerHTML = commentHtml;
-  initEventListerner();
-  answerComment();
-};
-
 fetchAndRenderComments();
-renderComments();
+renderComments({newComments});
 
 
-function answerComment() {
+export function answerComment() {
   const commentsAnswer = document.querySelectorAll('.comment');
   const formText = document.querySelector('.add-form-text');
   commentsAnswer.forEach((comment, index) => {
