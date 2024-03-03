@@ -1,3 +1,6 @@
+const nameInputElement = document.getElementById("name-input");
+const commentInputElement = document.getElementById("comment-input");
+
 export function getTodos() {
     return fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
         method: "GET"
@@ -7,12 +10,12 @@ export function getTodos() {
         })
 };
 
-export function postTodos({ text, name }) {
+export function postTodos() {
     return fetch('https://wedev-api.sky.pro/api/v1/regina-zaets/comments', {
         method: "POST",
         body: JSON.stringify({
-            text: text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
-            name: name.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
+            text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
+            name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
             // forceError: true,
         })
     })
@@ -32,5 +35,4 @@ export function postTodos({ text, name }) {
             //   throw new Error("Серввер упал");
             // }
         })
-}
-
+};
