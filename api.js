@@ -1,9 +1,14 @@
 const nameInputElement = document.getElementById("name-input");
 const commentInputElement = document.getElementById("comment-input");
+const userURL = 'https://wedev-api.sky.pro/api/v2/regina-zaets/comments';
+const host = 'https://wedev-api.sky.pro/api/v2/regina-zaets/comments';
 
 export function getTodos() {
-    return fetch("https://wedev-api.sky.pro/api/v1/regina-zaets/comments", {
-        method: "GET"
+    return fetch(host, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     })
         .then((response) => {
             return response.json();
@@ -11,8 +16,11 @@ export function getTodos() {
 };
 
 export function postTodos() {
-    return fetch('https://wedev-api.sky.pro/api/v1/regina-zaets/comments', {
+    return fetch(host, {
         method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
             text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
             name: nameInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),
@@ -35,4 +43,22 @@ export function postTodos() {
             //   throw new Error("Серввер упал");
             // }
         })
+};
+
+let token;
+export const setToken = (newToken) => {
+    token = newToken;
+};
+
+export function login({ login, password }) {
+    return fetch(userURL, {
+        method: "POST",
+        body: JSON.stringify({
+                login,
+                password,
+            })
+    })
+        .then((response) => {
+            return response.json();
+        });
 };

@@ -2,6 +2,7 @@ import { getTodos } from "./api.js";
 import { renderComments } from "./render.js";
 import { getDate } from "./helpers.js";
 import { initEventListerner , answerComment } from "./render.js";
+import { renderLogin } from "./login.js";
 
 
 const buttonElement = document.getElementById("add-button");
@@ -31,7 +32,8 @@ export const fetchAndRenderComments = () => {
     });
 };
 
-fetchAndRenderComments();
+// fetchAndRenderComments();
+renderLogin({ fetchAndRenderComments });
 initEventListerner();
 
 export let newComments = [
@@ -51,5 +53,6 @@ export let newComments = [
   //     },
 ];
 
-fetchAndRenderComments();
+// fetchAndRenderComments();
+renderLogin({ fetchAndRenderComments });
 renderComments({newComments});
