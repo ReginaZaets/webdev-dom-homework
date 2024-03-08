@@ -1,9 +1,14 @@
 import { getTodos } from "./api.js";
 import { renderComments } from "./render.js";
 import { getDate } from "./helpers.js";
-import { initEventListerner , answerComment } from "./render.js";
-import { renderLogin } from "./login.js";
+import { initEventListerner } from "./render.js";
+import { renderLogin } from "./renderLogin.js";
 
+
+export let user = JSON.parse(localStorage.getItem("user"));
+export const setUser = (newUser) => {
+    user = newUser;
+};
 
 const buttonElement = document.getElementById("add-button");
 const listElement = document.getElementById("list");
@@ -15,8 +20,8 @@ const textElementLoading = document.querySelector('.text-loading');
 
 export const fetchAndRenderComments = () => {
   getTodos().then((response) => {
-      return response
-    })
+    return response
+  })
     .then((responseData) => {
       newComments = responseData.comments.map((comment) => {
         return {
@@ -28,13 +33,14 @@ export const fetchAndRenderComments = () => {
         };
       });
       let hideTextLoading = textElementLoading.style.display = "none";
-      renderComments({newComments});
+      renderComments({ newComments });
     });
 };
 
-// fetchAndRenderComments();
-renderLogin({ fetchAndRenderComments });
+fetchAndRenderComments();
 initEventListerner();
+renderLogin();
+
 
 export let newComments = [
   // {
@@ -53,6 +59,5 @@ export let newComments = [
   //     },
 ];
 
-// fetchAndRenderComments();
-renderLogin({ fetchAndRenderComments });
-renderComments({newComments});
+fetchAndRenderComments();
+renderComments({ newComments });
