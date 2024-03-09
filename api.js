@@ -55,12 +55,13 @@ export function postTodos() {
 }
 
 export function login(login, password) {
+    const loginInputElement = document.getElementById('login-input')
+    const passwordInputElement = document.getElementById('password-input')
     return fetch(userUrl, {
         method: "POST",
         body: JSON.stringify({
-            login,
-            password,
-            // forceError: true,
+            login: loginInputElement.value,
+            password: passwordInputElement.value,
         })
     })
     .then((response) => {

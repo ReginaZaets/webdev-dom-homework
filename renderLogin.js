@@ -84,9 +84,20 @@ export const renderEntry = () => {
             name: nameInputElement.value,
             login: loginInputElement.value,
             password: passwordInputElement.value,
+        }).then((responseData) => {
+            localStorage.setItem("token", responseData.user.token);
+            localStorage.setItem("user", JSON.stringify(responseData.user.name));
+
+            setToken(responseData.user.token);
+            setUser(responseData.user.name);
         }).then(() => {
-            renderComments({ newComments });
+            fetchAndRenderComments();
+        }).catch((error) => {
+            console.warn(error);
         })
+    // }).then(() => {
+    //         renderComments({ newComments });
+    //     })
     });
 
     const logButtonElement = document.getElementById("log-button");
