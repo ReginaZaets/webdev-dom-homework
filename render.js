@@ -1,5 +1,5 @@
-import { postTodos, token } from "./api.js";
-import { newComments, fetchAndRenderComments, user } from "./main.js";
+import { postTodos, token, setToken } from "./api.js";
+import { newComments, fetchAndRenderComments, user, setUser } from "./main.js";
 import { renderLogin } from "./renderLogin.js";
 
 
@@ -45,7 +45,7 @@ export const renderComments = ({ newComments }) => {
 
 
   const btnLogin = `
-    <button class="auth">Авторизуйтесь</button>
+    <p class="auth">  Чтобы добавить комментарий, <u>авторизуйтесь</u> </p>
     `
 
 
@@ -96,9 +96,10 @@ export const renderComments = ({ newComments }) => {
     buttonElement.disabled = true;
     buttonElement.textContent = "Комментарий добавляется...";
 
-    postTodos().then(() => {
-      return fetchAndRenderComments();
-    })
+    postTodos()
+      .then(() => {
+        return fetchAndRenderComments();
+      })
       .then(() => {
         textElementLoading.disabled = false;
         buttonElement.disabled = false;
@@ -125,13 +126,14 @@ export const renderComments = ({ newComments }) => {
         // console.warn(error);
         console.log(error);
       });
-    renderComments({ newComments });
+    // renderComments({ newComments });
 
   };
-  
+
   if (token) {
     const buttonElement = document.getElementById("add-button");
-    buttonElement.addEventListener('click', addNewComment());
+    buttonElement.addEventListener('click', addNewComment);
+
   }
 }
 
@@ -139,37 +141,37 @@ export const renderComments = ({ newComments }) => {
 
 
 
-  export function initEventListerner() {
-    const likeButtonElements = document.querySelectorAll('.like-button');
-    for (const likeButtonElement of likeButtonElements) {
-      likeButtonElement.addEventListener('click', event => {
-        event.stopPropagation();
-        if (!token) {
-          alert('Авторизуйтесь')
-          return
-        }
-        const index = likeButtonElement.dataset.index;
-        if (newComments[index].isLiked === false) {
-          newComments[index].likes++;
-          newComments[index].isLiked = true;
-        } else {
-          newComments[index].likes--;
-          newComments[index].isLiked = false;
-        };
-        renderComments({ newComments });
-      });
-    };
+export function initEventListerner() {
+  const likeButtonElements = document.querySelectorAll('.like-button');
+  for (const likeButtonElement of likeButtonElements) {
+    likeButtonElement.addEventListener('click', event => {
+      event.stopPropagation();
+      if (!token) {
+        alert('Авторизуйтесь')
+        return
+      }
+      const index = likeButtonElement.dataset.index;
+      if (newComments[index].isLiked === false) {
+        newComments[index].likes++;
+        newComments[index].isLiked = true;
+      } else {
+        newComments[index].likes--;
+        newComments[index].isLiked = false;
+      };
+      renderComments({ newComments });
+    });
   };
+};
 
-  initEventListerner();
+initEventListerner();
 
-  export function answerComment() {
-    const commentsAnswer = document.querySelectorAll('.comment');
-    const formText = document.querySelector('.add-form-text');
-    commentsAnswer.forEach((comment, index) => {
-      comment.addEventListener('click', () => {
-        formText.value = `> ${newComments[index].text}\n ${newComments[index].name},`;
-      })
+export function answerComment() {
+  const commentsAnswer = document.querySelectorAll('.comment');
+  const formText = document.querySelector('.add-form-text');
+  commentsAnswer.forEach((comment, index) => {
+    comment.addEventListener('click', () => {
+      formText.value = `> ${newComments[index].text}\n ${newComments[index].name},`;
     })
-  }
+  })
+}
 

@@ -14,8 +14,8 @@ export function getTodos() {
     return fetch(host, {
         method: "GET",
         headers: {
-            Autorization: `Bearer ${token}`,
-        }
+            Authorization: `Bearer ${token}`,
+        },
     })
         .then((response) => {
             return response.json();
@@ -28,7 +28,7 @@ export function postTodos() {
     return fetch(host, {
         method: "POST",
         headers: {
-            Autorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
             text: commentInputElement.value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"),

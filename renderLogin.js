@@ -8,15 +8,14 @@ export const renderLogin = () => {
     const loginHtml = `
     <div class="container">
         <div id="log-form" class="add-form">
-        <h3>Форма входа</h3>
-        <input type="text" id="login-input" class="form-name" placeholder="Введите логин" />
-        <input type="password" id="password-input" class="form-password" placeholder="Введите пароль" />
+        <h3 class="add-text">Форма входа</h3>
+        <div class="add-form-log">
+            <input type="text" id="login-input" class="form-name" placeholder="Введите логин" />
+            <input type="password" id="password-input" class="form-password" placeholder="Введите пароль" />
+        </div>
         <div class="add-form-row">
             <button id="log-button" class="log-form-button">Войти</button>
-        </div>
-        </div>
             <button id="reg-button" class="reg" href="#">Зарегистрироваться</button>
-        </div>
         </div>
     </div>`;
 
@@ -54,10 +53,12 @@ export const renderEntry = () => {
     const loginHtml = `
         <div class="container">
         <div id="log-form" class="add-form">
-            <h3>Форма регистрации</h3>
-            <input type="text" id="name-input" class="form-name" placeholder="Введите имя" />
-            <input type="text" id="login-input" class="form-name" placeholder="Введите логин" />
-            <input type="password" id="password-input" class="form-password" placeholder="Введите пароль" />
+            <h3 class="add-text">Форма регистрации</h3>
+            <div class="add-form-log">
+                <input type="text" id="name-input" class="form-name" placeholder="Введите имя" />
+                <input type="text" id="login-input" class="form-name" placeholder="Введите логин" />
+                <input type="password" id="password-input" class="form-password" placeholder="Введите пароль" />
+            </div>
             <div class="add-form-row">
             <button id="reg-button" class="log-form-button">Зарегистрироваться</button>
             </div>
@@ -95,9 +96,9 @@ export const renderEntry = () => {
         }).catch((error) => {
             console.warn(error);
         })
-    // }).then(() => {
-    //         renderComments({ newComments });
-    //     })
+        // }).then(() => {
+        //         renderComments({ newComments });
+        //     })
     });
 
     const logButtonElement = document.getElementById("log-button");
