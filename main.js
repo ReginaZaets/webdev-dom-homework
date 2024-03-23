@@ -1,8 +1,8 @@
 import { getTodos } from "./api.js";
 import { renderComments } from "./render.js";
-import { getDate } from "./helpers.js";
 import { initEventListerner } from "./render.js";
 import { renderLogin } from "./renderLogin.js";
+import { format }  from "date-fns";
 
 
 export let user = JSON.parse(localStorage.getItem("user"));

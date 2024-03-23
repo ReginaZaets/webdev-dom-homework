@@ -1,7 +1,8 @@
-import { postTodos, token, setToken } from "./api.js";
+import { postTodos, token } from "./api.js";
 import { newComments, fetchAndRenderComments, user, setUser } from "./main.js";
 import { renderLogin } from "./renderLogin.js";
-
+import { sanitizeHtml } from './sanitizeHtml.js';
+import { format} from 'date-fns'
 
 
 
@@ -9,10 +10,13 @@ export const renderComments = ({ newComments }) => {
 
   const appElement = document.getElementById("app");
   const commentHtml = newComments.map((comment, index) => {
+    const createDate = format(new Date(comment.date), 'yyyy-MM-dd HH.mm.ss');
+    console.log(createDate);
+  
     return `<li class="comment">
         <div class="comment-header">
           <div>${comment.name} </div>
-          <div>${comment.date}</div>
+          <div>${createDate}</div>
         </div>
         <div class="comment-body">
           <div class="comment-text">
@@ -96,7 +100,9 @@ export const renderComments = ({ newComments }) => {
     buttonElement.disabled = true;
     buttonElement.textContent = "Комментарий добавляется...";
 
-    postTodos()
+    postTodos({
+      text: sanitizeHtml(commentInputElement.value)
+    })
       .then(() => {
         return fetchAndRenderComments();
       })
