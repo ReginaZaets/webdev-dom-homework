@@ -26,7 +26,7 @@ export const fetchAndRenderComments = () => {
       newComments = responseData.comments.map((comment) => {
         return {
           name: comment.author.name,
-          date: new Date(comment.date).toLocaleTimeString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }),
+          date: format(new Date(comment.date), 'yyyy-MM-dd HH.mm.ss'),
           text: comment.text,
           likes: comment.likes,
           isLiked: false,
