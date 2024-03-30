@@ -96,9 +96,6 @@ export const renderEntry = () => {
         }).catch((error) => {
             console.warn(error);
         })
-        // }).then(() => {
-        //         renderComments({ newComments });
-        //     })
     });
 
     const logButtonElement = document.getElementById("log-button");

@@ -2,7 +2,7 @@ import { getTodos } from "./api.js";
 import { renderComments } from "./render.js";
 import { initEventListerner } from "./render.js";
 import { renderLogin } from "./renderLogin.js";
-import { format }  from "date-fns";
+
 
 
 export let user = JSON.parse(localStorage.getItem("user"));
@@ -26,7 +26,7 @@ export const fetchAndRenderComments = () => {
       newComments = responseData.comments.map((comment) => {
         return {
           name: comment.author.name,
-          date: format(new Date(comment.date), 'yyyy-MM-dd HH.mm.ss'),
+          date: comment.date,
           text: comment.text,
           likes: comment.likes,
           isLiked: false,
